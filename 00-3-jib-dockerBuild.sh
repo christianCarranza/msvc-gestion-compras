@@ -1,0 +1,1 @@
+find . -maxdepth 2 -name "pom.xml"  -exec mvn clean verify jib:dockerBuild -f '{}' \;

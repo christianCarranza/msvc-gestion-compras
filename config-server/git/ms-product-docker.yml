@@ -1,0 +1,57 @@
+server:
+  port: ${PORT:0}
+
+spring:
+  
+  cloud:
+        
+    bus:
+      enabled: true
+      destination: springCloudBus
+    
+  datasource:
+    driver-class-name: org.postgresql.Driver
+  
+  h2:
+    console:
+      enabled: false
+      path: /h2-console
+  
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        '[show_sql]': true
+        '[use_sql_comments]': false
+        '[format_sql]': false
+        '[event.merge.entity_copy_observer]': allow
+    show-sql: true
+  
+  boot:
+    admin:
+      client:
+        enabled: true
+  
+  zipkin:
+    enabled: true
+    sender:
+      type: kafka
+    kafka:
+      topic: zipkin
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+
+eureka:
+  client:
+    enabled: true
+
+  instance:
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}

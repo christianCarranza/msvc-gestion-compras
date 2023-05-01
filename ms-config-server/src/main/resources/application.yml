@@ -1,0 +1,42 @@
+server:
+  port: 8888
+spring:
+  
+  application:
+    name: ms-config-server
+    
+#  profiles:
+#    active:
+#    - vault
+#    - git
+    
+  cloud:
+    config:
+      fail-fast: true
+      retry:
+        initial-interval: 3000
+        multiplier: 1.3
+        max-interval: 10000
+        max-attempts: 20
+      server:
+#        vault:
+#          order: 1
+#          host: ${VAULT_HOST:vault} 
+#          scheme: ${VAULT_SCHEME:http}
+#          port: ${VAULT_PORT:8200}
+#          kv-version: ${VAULT_VERSION:2}
+#          token: ${VAULT_TOKEN:00000000-0000-0000-0000-000000000000}
+        git:
+#          order: 2
+          default-label: ${GIT_BRANCH:master}
+          uri: ${GIT}
+#          username: 
+#          password: 
+          ignore-local-ssh-settings: true
+          passphrase: ${GIT_PASSPHRASE}
+          private-key: ${GIT_SSH_KEY}
+          
+  security:
+    user:
+      name: ${CONFIG_SERVER_USERNAME:admin}
+      password: ${CONFIG_SERVER_PASSWORD:admin}

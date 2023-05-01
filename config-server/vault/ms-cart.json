@@ -1,0 +1,11 @@
+{	
+	"spring.boot.admin.client.url": "http://ms-sba-server:8086",
+	"spring.boot.admin.client.username": "admin",
+	"spring.boot.admin.client.password": "admin",
+	
+	"spring.kafka.bootstrap-servers[0]": "zipkin-kafka:19092",
+	
+	"eureka.client.service-url.defaultZone": "http://admin:admin@ms-discovery-server:8761/eureka",
+	
+	"spring.security.oauth2.resourceserver.jwt.issuer-uri": "http://gateway.docker.internal:8181/auth/realms/msi"
+}

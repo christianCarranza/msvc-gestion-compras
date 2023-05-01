@@ -1,0 +1,144 @@
+version: "3.8"
+
+services:
+
+  ms-discovery-server:
+    image: ms-discovery-server:1.0.0
+    container_name: ms-discovery-server
+    restart: always
+    ports:
+      - 8761:8761
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 200M
+        reservations:
+          cpus: '0.25'
+          memory: 50M
+    networks:
+      - netms1
+
+  ms-config-server:
+    image: ms-config-server:1.0.0
+    container_name: ms-config-server
+    environment:
+      CONFIG_SERVER_USERNAME: admin
+      CONFIG_SERVER_PASSWORD: admin
+      GIT: 
+      GIT_BRANCH: main
+      GIT_PASSPHRASE: 12345
+      GIT_SSH_KEY: |
+       -----BEGIN EC PRIVATE KEY-----
+       -----END EC PRIVATE KEY-----
+    restart: always
+    ports:
+      - 8888:8888
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 100M
+        reservations:
+          cpus: '0.25'
+          memory: 50M
+    networks:
+      - netms1
+      
+  ms-gateway-server:
+    image: ms-gateway-server:1.0.0
+    container_name: ms-gateway-server
+    environment:
+      PORT_KAFKA: 9092
+      #PORT_KEYCLOAK: 8080
+    restart: always
+    ports:
+      - 8080:8080
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 200M
+        reservations:
+          cpus: '0.25'
+          memory: 50M
+    depends_on:
+      - ms-discovery-server
+      - ms-config-server
+    networks:
+      - netms1
+      
+  ms-sba-server:
+    image: ms-sba-server:1.0.0
+    container_name: ms-sba-server
+    restart: always
+    ports:
+      - 8086:8086
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 200M
+        reservations:
+          cpus: '0.25'
+          memory: 50M
+    depends_on:
+      - ms-discovery-server
+      - ms-config-server
+    networks:
+      - netms1
+      
+  ms-product:
+    image: ms-product:1.0.0
+    container_name: ms-product
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      CONFIG_SERVER: http://ms-config-server:8888
+      CONFIG_SERVER_USERNAME: admin
+      CONFIG_SERVER_PASSWORD: admin
+      VAULT: http://vault:8200
+      VAULT_TOKEN: 00000000-0000-0000-0000-000000000000
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 200M
+        reservations:
+          cpus: '0.25'
+          memory: 50M
+    depends_on:
+      - ms-discovery-server
+      - ms-config-server
+    networks:
+      - netms1
+      
+  ms-cart:
+    image: ms-cart:1.0.0
+    container_name: ms-cart
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      CONFIG_SERVER: http://ms-config-server:8888
+      CONFIG_SERVER_USERNAME: admin
+      CONFIG_SERVER_PASSWORD: admin
+      VAULT: http://vault:8200
+      VAULT_TOKEN: 00000000-0000-0000-0000-000000000000
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 200M
+        reservations:
+          cpus: '0.25'
+          memory: 50M
+    depends_on:
+      - ms-discovery-server
+      - ms-config-server
+    networks:
+      - netms1
+      
+networks:
+  netms1:
+    name: net-ms1
+

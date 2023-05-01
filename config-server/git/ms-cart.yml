@@ -1,0 +1,89 @@
+server:
+  port: ${PORT:0}
+
+spring:
+  
+  cloud:
+  
+    bus:
+      enabled: true
+      destination: springCloudBus
+    
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:ms-cart
+    username: sa
+    password: ''
+  
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  
+  jpa:
+    defer-datasource-initialization: true
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        '[show_sql]': true
+        '[use_sql_comments]': false
+        '[format_sql]': true
+        '[event.merge.entity_copy_observer]': allow
+    show-sql: true
+  sql:
+    init:
+      mode: always
+      platform: h2
+  
+  boot:
+    admin:
+      client:
+        enabled: true
+  
+  zipkin:
+    enabled: true
+    sender:
+      type: kafka
+    kafka:
+      topic: zipkin
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+
+eureka:
+  client:
+    enabled: true
+
+  instance:
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      defecto:
+        sliding-window-size: 6
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 20s
+        permitted-number-of-calls-in-half-open-state: 4
+        slow-call-rate-threshold: 50
+        slow-call-duration-threshold: 2s
+    instances:
+      product:
+        base-config: defecto
+  timelimiter:
+    configs:
+      defecto:
+        timeout-duration: 2s
+    instances:
+      product:
+        base-config: defecto
+        
+configuration:
+    texto: Configurando entorno Defecto...

@@ -1,0 +1,60 @@
+version: '3'
+
+volumes:
+  postgres_data_keycloak:
+      driver: local
+
+services:
+  storage-keycloak:
+    image: postgres:12-alpine
+    container_name: db-postgres-keycloak
+    volumes:
+    - postgres_data_keycloak:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloak
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 100M
+        reservations:
+          cpus: '0.25'
+          memory: 50M
+    networks:
+    - netms1
+    
+  keycloak:
+    image: quay.io/keycloak/keycloak:legacy
+    container_name: keycloak
+    environment:
+      DB_VENDOR: POSTGRES
+      DB_ADDR: db-postgres-keycloak
+      DB_DATABASE: keycloak
+      DB_USER: keycloak
+      DB_SCHEMA: public
+      DB_PASSWORD: keycloak
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin
+      # Uncomment the line below if you want to specify JDBC parameters. The parameter below is just an example, and it shouldn't be used in production without knowledge. It is highly recommended that you read the PostgreSQL JDBC driver documentation in order to use it.
+      #JDBC_PARAMS: "ssl=true"
+    ports:
+    - 8181:8080
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 600M
+        reservations:
+          cpus: '0.25'
+          memory: 400M
+    depends_on:
+    - storage-keycloak
+    networks:
+    - netms1
+
+networks:
+  netms1:
+    name: net-ms1

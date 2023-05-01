@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  vault:
+    image: vault:1.12.2
+    container_name: vault
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: 00000000-0000-0000-0000-000000000000
+    cap_add:
+      - IPC_LOCK
+    ports:
+      - 8200:8200
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 50M
+        reservations:
+          cpus: '0.25'
+          memory: 20M
+    networks:
+      - netms1
+      
+
+
+networks:
+  netms1:
+    name: net-ms1
